@@ -2,7 +2,7 @@
 // Keeps the GitHub token server-side, caches results for 10 minutes,
 // and returns real contribution counts via the GraphQL API.
 const USER = process.env.GITHUB_USER || "kavix";
-const TOKEN = process.env.GITHUB_TOKEN || "";
+const TOKEN = process.env.GH_TOKEN || "";
 const TTL_MS = 10 * 60 * 1000;
 let cache = { at: 0, body: "" }; // survives warm invocations
 
