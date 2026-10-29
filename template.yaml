@@ -1,0 +1,28 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: GitHub proxy for the portfolio (Lambda Function URL, cached)
+Parameters:
+  GitHubUser: { Type: String, Default: kavix }
+  GitHubToken: { Type: String, NoEcho: true, Default: "" }
+  AllowedOrigin: { Type: String, Default: "*", Description: "Your Amplify site URL, e.g. https://main.xxxx.amplifyapp.com" }
+Resources:
+  GithubProxy:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs20.x
+      Handler: index.handler
+      CodeUri: .
+      MemorySize: 128
+      Timeout: 15
+      Environment:
+        Variables:
+          GITHUB_USER: !Ref GitHubUser
+          GITHUB_TOKEN: !Ref GitHubToken
+      FunctionUrlConfig:
+        AuthType: NONE
+        Cors:
+          AllowOrigins: [!Ref AllowedOrigin]
+          AllowMethods: [GET]
+Outputs:
+  ApiUrl:
+    Value: !GetAtt GithubProxyUrl.FunctionUrl

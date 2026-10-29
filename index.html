@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kavi · Portfolio</title>
+<style>
+:root{--bg:#f6f8fa;--card:#fff;--text:#1f2328;--muted:#59636e;--line:#d1d9e0;--add-bg:#dafbe1;--add-n:#aceebb;--add-fg:#116329;--del-bg:#ffebe9;--del-n:#ffcecb;--del-fg:#82071e;--hunk:#ddf4ff;--open:#1a7f37;--merged:#8250df;--link:#0969da;--sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1117;--card:#151b23;--text:#f0f6fc;--muted:#9198a1;--line:#3d444d;--add-bg:#12261e;--add-n:#1b4a2c;--add-fg:#7ee787;--del-bg:#2d1619;--del-n:#5a1e23;--del-fg:#ffa198;--hunk:#102a4c;--open:#3fb950;--merged:#ab7df8;--link:#4493f8}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--sans)}
+a{color:var(--link)}code{font-family:var(--mono);font-size:.9em}
+.wrap{max-width:980px;margin:0 auto;padding:0 20px}
+nav{border-bottom:1px solid var(--line);background:var(--card);position:sticky;top:0;z-index:5}
+nav .wrap{display:flex;gap:20px;align-items:center;height:52px;overflow-x:auto}
+nav strong{margin-right:auto}nav a{color:var(--text);text-decoration:none;white-space:nowrap}nav a:hover{color:var(--link)}
+h1{font-size:clamp(2rem,6vw,3.2rem);line-height:1.1;margin:48px 0 12px}h2{margin:56px 0 12px;font-size:1.5rem}
+.lead{color:var(--muted);max-width:58ch;margin:0 0 24px}
+.hint{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--open);color:var(--open);border-radius:999px;padding:4px 14px;font-size:.9rem;text-decoration:none;margin-bottom:14px}
+.hint i{width:9px;height:9px;border-radius:50%;background:var(--open);animation:pulse 1.6s infinite}@keyframes pulse{50%{opacity:.25}}
+.title{font-size:1.5rem;margin:0 0 8px;font-weight:600}.title span{color:var(--muted);font-weight:300}
+.state{display:inline-block;background:var(--open);color:#fff;border-radius:999px;padding:2px 12px;font-size:.85rem;margin-right:8px}
+.merged .state{background:var(--merged)}.meta{color:var(--muted);font-size:.92rem}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:16px 0 18px;overflow-x:auto}
+.tabs button{border:0;border-bottom:2px solid transparent;border-radius:0;background:none;padding:8px 14px;color:var(--muted);white-space:nowrap}
+.tabs button[aria-selected=true]{border-color:#fd8c73;color:var(--text);font-weight:600}
+.tabs em{font-style:normal;background:var(--line);border-radius:999px;padding:0 7px;font-size:.8rem;margin-left:4px}
+.layout{display:grid;gap:24px;grid-template-columns:1fr 230px}
+@media(max-width:760px){.layout{grid-template-columns:1fr}}
+.box{background:var(--card);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;overflow:hidden}
+.box>.hd{padding:10px 16px;background:var(--bg);border-bottom:1px solid var(--line);font-size:.92rem;color:var(--muted)}.box>.bd{padding:14px 16px}
+.box>.hd b{color:var(--text)}
+.tl{border-left:2px solid var(--line);margin:0 0 16px 18px;padding-left:18px}.tl p{margin:0 0 12px;color:var(--muted);font-size:.92rem}.tl b{color:var(--text)}
+.diff{width:100%;border-collapse:collapse;font:.85rem/1.6 var(--mono)}
+.diff td{padding:0 10px;white-space:pre}.diff .n{width:44px;min-width:44px;text-align:right;color:var(--muted);user-select:none}
+.diff .add td{background:var(--add-bg);color:var(--add-fg)}.diff .add .n{background:var(--add-n)}
+.diff .del td{background:var(--del-bg);color:var(--del-fg)}.diff .del .n{background:var(--del-n)}
+.diff .hunk td{background:var(--hunk);color:var(--muted)}.diff .cmt td{white-space:normal;padding:10px 14px;background:var(--card);font:.92rem var(--sans)}
+.scroll{overflow-x:auto}
+.check{display:flex;gap:10px;align-items:center;padding:10px 16px;border-top:1px solid var(--line)}.check:first-child{border-top:0}
+.check small{margin-left:auto;color:var(--muted)}
+.ic{width:18px;height:18px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--link);animation:spin 1s linear infinite;flex:none}
+.ic.ok{animation:none;background:var(--open);border-color:var(--open);color:#fff;font-size:11px;line-height:14px;text-align:center}
+@keyframes spin{to{transform:rotate(360deg)}}
+button,select,input{font:inherit;border-radius:6px;padding:6px 14px;border:1px solid var(--line);background:var(--card);color:var(--text)}button{cursor:pointer}
+button.go{background:var(--open);border-color:var(--open);color:#fff;font-weight:600}button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:3px solid var(--link);outline-offset:2px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.row input{flex:1;min-width:200px}
+.mb{padding:14px 16px;border-top:1px solid var(--line)}.mb:first-child{border-top:0}
+.ok-t{color:var(--open);font-weight:600}.mg-t{color:var(--merged);font-weight:600}
+.story{background:color-mix(in srgb,var(--merged) 8%,var(--card))}.story[hidden]{display:none}.story ul{margin:6px 0 0;padding-left:20px}
+.side h4{margin:0 0 6px;font-size:.85rem;color:var(--muted);font-weight:600}.side div{margin-bottom:16px;font-size:.92rem}
+.lbl{display:inline-block;border-radius:999px;padding:0 10px;font-size:.78rem;margin:0 4px 4px 0;border:1px solid var(--line)}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px}.card h3{margin:0 0 4px;font-size:1.02rem}.card p{margin:0;color:var(--muted);font-size:.93rem}
+#cv{position:fixed;inset:0;pointer-events:none;z-index:20}.two{display:grid;gap:16px;grid-template-columns:1.2fr 1fr}@media(max-width:760px){.two{grid-template-columns:1fr}}
+.term{background:#0d1117;color:#e6edf3;font:.84rem/1.65 var(--mono);border-radius:8px;padding:14px 0;overflow-x:auto;margin:0}
+.term .ln{display:block;padding:0 16px;white-space:pre}.term .dim{opacity:.35}.term .hl{background:#1f6feb33;box-shadow:inset 3px 0 #58a6ff}
+.term .hash{color:#d29922}.term .hd{color:#3fb950}.term .dt,.term .cmd{color:#8b949e}
+#tm{width:100%;accent-color:var(--merged)}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:0 10px;font-size:.8rem;margin:0 4px 4px 0;opacity:.35}.chip.on{opacity:1;border-color:var(--open);color:var(--open)}
+#gw{overflow-x:auto;background:#0f2418;border-radius:8px;padding:12px;border:1px solid var(--line)}#gc{display:block}
+#tip{position:fixed;z-index:30;background:#0d1117;color:#e6edf3;border:1px solid #3d444d;border-radius:6px;padding:6px 10px;font-size:.82rem;white-space:pre-line;pointer-events:none;max-width:280px}#tip[hidden]{display:none}.bar{display:flex;height:10px;border-radius:5px;overflow:hidden}.bar span{height:100%}
+.blame{width:100%;border-collapse:collapse}.blame td{padding:8px 14px;vertical-align:top;border-top:1px solid var(--line)}.blame tr:first-child td{border-top:0}
+.blame .bh{font:.8rem var(--mono);color:var(--muted);white-space:nowrap}.blame .bh button{border:0;padding:0;background:none;color:var(--link);font:inherit;text-decoration:underline;cursor:pointer}.blame tr:hover td{background:var(--bg)}
+#sh{padding:12px 0}#sh:focus-within{outline:3px solid var(--link);outline-offset:2px}#sh .row{flex-wrap:nowrap;padding:0 16px}
+#shIn{flex:1;min-width:0;background:transparent;color:inherit;border:0;font:inherit;padding:0;outline:none}
+
+.legend{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.85rem;margin-top:10px}.legend i{display:inline-block;width:10px;height:10px;margin-right:5px;border-radius:2px}
+footer{margin:64px 0 32px;color:var(--muted);font-size:.9rem}
+@media(prefers-reduced-motion:reduce){.hint i,.ic{animation:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<nav><div class="wrap"><strong>Kavi</strong><a href="#about">About</a><a href="#skills">Skills</a><a href="#projects">Projects</a><a href="#pr">Review my PR</a><a href="#time-machine">Time machine</a><a href="#garden">Garden</a><a href="#shell">Git shell</a></div></nav>
+<main class="wrap">
+<h1>Hi, I'm Kavi.</h1>
+<p class="lead">Software engineering student at SLIIT who learns by contributing to real open source projects. A pull request is waiting for your review.</p>
+
+<section id="pr" aria-labelledby="t">
+<a class="hint" href="#pr"><i></i> 1 pull request awaiting your review</a>
+<div id="prRoot">
+<h3 class="title" id="t">Merge Kavi into your team <span>#1</span></h3>
+<span class="state" id="state">Open</span><span class="meta"><b>kavix</b> wants to merge 1 commit into <code>your-team:main</code> from <code>kavix:kavi</code></span>
+<div class="tabs" role="tablist">
+<button role="tab" aria-selected="true" data-p="conv">Conversation</button>
+<button role="tab" aria-selected="false" data-p="checks">Checks<em id="cc">0/4</em></button>
+<button role="tab" aria-selected="false" data-p="files">Files changed<em>1</em></button>
+</div>
+<div class="layout"><div>
+<div id="conv">
+ <div class="box"><div class="hd"><b>kavix</b> commented</div><div class="bd">This PR adds a developer who reads the whole codebase before sending a fix. Please review the diff under <b>Files changed</b>, wait for the checks, approve, then merge.</div></div>
+ <div class="tl" id="tl"><p><b>kavix</b> pushed 1 commit: <code>a1b2c3d</code> Add Go, Python and open source</p></div>
+ <div class="box" id="mergeBox">
+  <div class="mb" id="rev"><span id="revT">Review required: at least 1 approving review.</span> <button id="appr" style="margin-left:8px">Approve</button></div>
+  <div class="mb" id="chkT">Checks running… 0 of 4 complete</div>
+  <div class="mb" id="act"><div class="row"><button class="go" id="mergeBtn" disabled>Merge pull request</button>
+   <select id="how" aria-label="Merge method"><option>Create a merge commit</option><option>Squash and merge</option><option>Rebase and merge</option></select></div>
+   <div class="row" id="confirm" hidden style="margin-top:12px"><input id="msg" value="Merge Kavi into your team (#1)" aria-label="Commit message"><button class="go" id="conf">Confirm merge</button><button id="canc">Cancel</button></div>
+   <p id="note" role="status" aria-live="polite" style="color:var(--muted);font-size:.9rem;margin:8px 0 0"></p></div>
+ </div>
+ <div class="box story" id="story" hidden><div class="hd"><b>Merged.</b> Here's the story behind the diff.</div><div class="bd"><ul>
+  <!-- EDIT: replace with your real story -->
+  <li>Started software engineering at SLIIT and kept choosing hands-on projects over tutorials.</li>
+  <li>Built <a href="https://github.com/kavix/kurl">kurl</a>, a human-readable HTTP client in Go.</li>
+  <li>Sent fixes to real projects, so "open source" in the diff is backed by merged work.</li></ul></div></div>
+</div>
+<div id="checks" hidden><div class="box" id="clist"></div><button id="rerun">Re-run all checks</button></div>
+<div id="files" hidden><div class="box"><div class="hd"><code>kavi/profile.yml</code> <span style="float:right;color:var(--open)">+9 <span style="color:var(--del-fg)">−1</span></span></div><div class="scroll"><table class="diff" id="diff"></table></div></div></div>
+</div>
+<aside class="side"><div><h4>Reviewers</h4>You <span id="rs" style="color:var(--muted)">(pending)</span></div><div><h4>Labels</h4><span class="lbl">open-source</span><span class="lbl">ready-to-hire</span><span class="lbl">good first teammate</span></div><div><h4>Assignees</h4>kavix</div><div><h4>Milestone</h4>AWS Student Builder Challenge</div></aside>
+</div></div>
+</section>
+
+<section id="time-machine"><h2>Git log time machine</h2>
+<p class="lead">My journey as a <code>git log</code>. Drag the slider to check out any date and see what I was building then.</p>
+<div class="box"><div class="bd"><label for="tm">Checked out date: <b id="tmDate"></b></label>
+<input type="range" id="tm" min="0" max="1" value="1" step="1">
+<div class="row" style="margin-top:10px"><button id="tmPlay">▶ Replay history</button><button id="tmMain">git checkout main</button></div></div></div>
+<div class="two"><pre class="term" id="tmLog" aria-label="git log graph"></pre><div class="box"><div class="hd" id="tmHead"></div><div class="bd" id="tmBody" role="status" aria-live="polite"></div></div></div></section>
+
+<section id="garden"><h2>Contribution garden</h2>
+<p class="lead">Every pull request I open becomes a flower, and every active day grows the soil. This is live data from my GitHub account.</p>
+<div id="gw"><canvas id="gc" role="img" aria-label="Garden of GitHub contributions"></canvas></div>
+<p id="gStats" class="meta" style="margin:10px 0 0"></p>
+<div class="legend"><span><i style="background:#1f3a28"></i>No activity</span><span><i style="background:#3fb950"></i>Active day</span><span><i style="background:#ab7df8"></i>Merged PR</span><span><i style="background:#79c0ff"></i>Open PR</span><span><i style="background:#ff7b72"></i>Closed PR</span></div>
+<div class="row" style="margin-top:10px"><button id="water">Water the garden</button></div>
+<div id="tip" hidden></div></section>
+
+<section id="shell"><h2>Git shell</h2><p class="lead">Poke around with real-looking commands. Try <code>help</code>, <code>git log</code> or <code>git checkout garden</code>.</p>
+<div class="term" id="sh"><div id="shOut"></div><div class="row"><span class="hd">$</span><input id="shIn" aria-label="Git command" autocomplete="off" spellcheck="false" placeholder="type help"></div></div></section>
+
+<section id="about"><h2>About me</h2><p class="lead">Shown as a <code>git blame</code>. Click a hash to jump to that commit in the time machine.</p><div class="box"><div class="scroll"><table class="blame" id="blame"></table></div></div><noscript><p>I'm a software engineering student at SLIIT and an open source contributor.</p></noscript></section>
+<section id="skills"><h2>Skills</h2><div class="grid">
+<div class="card"><h3>Languages</h3><p>Go, Python, TypeScript</p></div><div class="card"><h3>Tools</h3><p>Git, Docker, AWS Amplify</p></div><div class="card"><h3>Working style</h3><p>Reads the code first, then opens a small PR</p></div></div></section>
+<section id="projects"><h2>Projects</h2><div class="grid">
+<div class="card"><h3><a href="https://github.com/kavix/kurl">kurl</a></h3><p>Human-readable HTTP client written in Go.</p></div></div>
+<h3 style="margin-top:28px">Merged pull requests <small style="color:var(--muted);font-weight:400">(live from GitHub)</small></h3>
+<div class="grid" id="prs"><div class="card"><p>Loading from GitHub…</p></div></div>
+<h3 style="margin-top:28px">Top repositories</h3><div class="grid" id="repos"></div>
+<h3 style="margin-top:28px">Languages across my repos</h3><div id="langs"></div></section>
+<footer>Built on AWS Amplify Hosting · <a href="https://github.com/kavix">GitHub</a></footer>
+</main>
+<canvas id="cv" aria-hidden="true"></canvas>
+
+<script>
+const $=s=>document.querySelector(s), tl=$("#tl");
+let approved=false, passed=0, runId=0;
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const ev=h=>{const p=document.createElement("p");p.innerHTML=h;tl.appendChild(p)};
+
+// tabs
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  ["conv","checks","files"].forEach(id=>$("#"+id).hidden=id!==b.dataset.p)});
+
+// diff with line numbers
+const D=[["h","@@ -1,4 +1,12 @@"],["c","name: Kavi"],["d","role: student who only reads tutorials"],["a","role: software developer and open source contributor"],
+["c","languages:"],["a","  - Go"],["a","  - Python"],["a","  - TypeScript"],["a","contributes_to:"],["a","  - OpenChoreo, Pyrefly, Forgejo"],["a","  - ballerina-lang, thunderid"],["c","learning: always"]];
+let o=1,n=1,html="";
+D.forEach(([t,x])=>{
+ if(t==="h"){html+=`<tr class="hunk"><td class="n"></td><td class="n"></td><td>${x}</td></tr>`;return}
+ const a=t!=="a"?o++:"", b=t!=="d"?n++:"";
+ html+=`<tr class="${t==="a"?"add":t==="d"?"del":""}"><td class="n">${a}</td><td class="n">${b}</td><td>${t==="a"?"+":t==="d"?"-":" "} ${x}</td></tr>`;
+ if(x==="  - Python")html+=`<tr class="cmt"><td class="n"></td><td class="n"></td><td><b>kavix</b> commented: Python is for ML coursework and quick tools. Go is for CLIs like kurl.</td></tr>`;
+});
+$("#diff").innerHTML=html;
+
+// CI checks
+const C=[["build / compiles-with-curiosity","18s"],["test / ships-real-prs","41s"],["lint / clean-commits","7s"],["security / no-secrets-leaked","12s"]];
+function runChecks(){
+ const id=++runId;passed=0;$("#cc").textContent="0/4";
+ $("#clist").innerHTML=C.map(c=>`<div class="check"><span class="ic"></span><span>${c[0]}</span><small>running</small></div>`).join("");
+ C.forEach((c,i)=>setTimeout(()=>{if(id!==runId)return;
+  const el=$("#clist").children[i];el.querySelector(".ic").className="ic ok";el.querySelector(".ic").textContent="✓";el.querySelector("small").textContent="passed in "+c[1];
+  passed++;$("#cc").textContent=passed+"/4";
+  $("#chkT").innerHTML=passed===4?'<span class="ok-t">✓ All checks have passed</span> (4 successful checks)':`Checks running… ${passed} of 4 complete`;
+  refresh()},(reduce?200:900)*(i+1)));
+ $("#chkT").textContent="Checks running… 0 of 4 complete";refresh();
+}
+$("#rerun").onclick=runChecks;
+
+function refresh(){$("#mergeBtn").disabled=!(approved&&passed===4);
+ $("#note").textContent=!approved?"Approve the changes to enable merging.":passed<4?"Waiting for checks to pass.":"This branch has no conflicts with the base branch."}
+
+$("#appr").onclick=()=>{approved=true;$("#appr").remove();$("#revT").innerHTML='<span class="ok-t">✓ Changes approved</span> by you';$("#rs").textContent="✓ approved";$("#rs").style.color="var(--open)";
+ ev("<b>You</b> approved these changes");refresh()};
+$("#mergeBtn").onclick=()=>{$("#confirm").hidden=false;$("#msg").focus()};
+$("#canc").onclick=()=>$("#confirm").hidden=true;
+$("#conf").onclick=()=>{
+ $("#prRoot").classList.add("merged");$("#state").textContent="Merged";$("#rev").remove();$("#chkT").remove();
+ $("#act").innerHTML='<span class="mg-t">Pull request successfully merged and closed.</span> <button id="del" style="margin-left:8px">Delete branch</button>';
+ $("#del").onclick=e=>{e.target.remove();ev("<b>kavix</b> deleted the <code>kavi</code> branch. Kavi is now part of <code>main</code>.")};
+ ev(`<b>You</b> merged commit <code>a1b2c3d</code> into <code>main</code> (${$("#how").value.toLowerCase()})`);
+ $("#story").hidden=false;$("#story").scrollIntoView({behavior:reduce?"auto":"smooth",block:"nearest"});
+ if(!reduce)confetti()};
+
+function confetti(){
+ const c=$("#cv"),x=c.getContext("2d");c.width=innerWidth;c.height=innerHeight;
+ const col=["#8250df","#3fb950","#0969da","#f0883e","#db61a2"];
+ const p=Array.from({length:150},()=>({x:innerWidth/2,y:innerHeight/3,vx:(Math.random()-.5)*14,vy:Math.random()*-12-2,s:Math.random()*6+4,c:col[Math.random()*5|0]}));
+ let f=0;(function t(){x.clearRect(0,0,c.width,c.height);p.forEach(b=>{b.vy+=.35;b.x+=b.vx;b.y+=b.vy;x.fillStyle=b.c;x.fillRect(b.x,b.y,b.s,b.s)});
+ if(++f<160)requestAnimationFrame(t);else x.clearRect(0,0,c.width,c.height)})();}
+
+// ---- GitHub data: AWS Lambda proxy if configured, else the public API ----
+const API=""; // EDIT: paste your Lambda Function URL here after deploying (see lambda/README.md)
+const GHU="kavix",GAPI="https://api.github.com/";
+const getJ=u=>fetch(u).then(r=>r.ok?r.json():Promise.reject());
+const normPR=i=>({created_at:i.created_at,title:i.title,url:i.html_url,repo:i.repository_url.split("/repos/")[1],num:i.number,st:i.pull_request&&i.pull_request.merged_at?"merged":i.state==="open"?"open":"closed"});
+const normRepo=r=>({name:r.name,desc:r.description,stars:r.stargazers_count,forks:r.forks_count,lang:r.language,url:r.html_url});
+const pub=()=>Promise.allSettled([
+ getJ(`${GAPI}search/issues?q=author:${GHU}+is:pr&sort=created&order=desc&per_page=100`),
+ getJ(`${GAPI}users/${GHU}/events/public?per_page=100`),
+ getJ(`${GAPI}users/${GHU}/repos?sort=pushed&per_page=100`)
+]).then(([a,b,c])=>({cal:null,prs:a.value?a.value.items.map(normPR):[],evs:b.value||[],repos:c.value?c.value.filter(r=>!r.fork).map(normRepo):[]}));
+const GH=API?getJ(API).then(d=>({cal:d.calendar,prs:d.prs,evs:[],repos:d.repos})).catch(pub):pub();
+const el=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const link=(u,x)=>{const a=el("a","",x);a.href=u;a.target="_blank";a.rel="noopener";return a};
+const card=(h,p)=>{const c=el("div","card"),t=el("h3");t.append(h);c.append(t,el("p","",p));return c};
+const LC={Go:"#00ADD8",Python:"#3572A5",TypeScript:"#3178c6",JavaScript:"#f1e05a",Java:"#b07219",HTML:"#e34c26",Shell:"#89e051",Dockerfile:"#384d54",C:"#555555","C++":"#f34b7d",Rust:"#dea584"};
+GH.then(d=>{
+ const b=$("#prs"),m=d.prs.filter(p=>p.st==="merged").slice(0,6);b.replaceChildren();
+ if(!m.length)b.append(card("Merged pull requests","Could not load them. See github.com/"+GHU));
+ m.forEach(p=>b.append(card(link(p.url,p.title),p.repo+" #"+p.num)));
+ const r=$("#repos");r.replaceChildren();
+ if(!d.repos.length)r.append(card("Repositories","Could not load them. See github.com/"+GHU));
+ d.repos.slice(0,6).forEach(x=>r.append(card(link(x.url,x.name),(x.desc||"No description")+" · ★ "+x.stars+" · "+x.forks+" forks"+(x.lang?" · "+x.lang:""))));
+ const L={};d.repos.forEach(x=>{if(x.lang)L[x.lang]=(L[x.lang]||0)+1});
+ const tot=Object.values(L).reduce((a,v)=>a+v,0),lg=$("#langs"),ent=Object.entries(L).sort((a,v)=>v[1]-a[1]);lg.replaceChildren();
+ if(tot){const bar=el("div","bar"),leg=el("div","legend");
+  ent.forEach(([k,v])=>{const s=el("span");s.style.width=v/tot*100+"%";s.style.background=LC[k]||"#8b949e";s.title=k;bar.append(s);
+   const t=el("span"),i=el("i");i.style.background=LC[k]||"#8b949e";t.append(i,k+" "+Math.round(v/tot*100)+"%");leg.append(t)});
+  lg.append(bar,leg)}
+});
+
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// ---- Git log time machine ----
+// EDIT: replace dates, messages and stacks with your real journey (oldest first).
+const T=[
+{d:"2022-10-03",h:"3f2a9c1",br:"main",m:"init: start software engineering at SLIIT",b:"Learning programming fundamentals, Git and how to read documentation.",s:["Git","Python"],f:["README.md"]},
+{d:"2023-06-12",h:"8b1d4e7",br:"main",m:"feat: database applications coursework",b:"Designing schemas, writing SQL and building small CRUD apps.",s:["SQL"],f:["schema.sql","app/"]},
+{d:"2024-03-04",h:"c47e0a2",br:"main",m:"feat: computer graphics assignments",b:"Rendering, transforms and shaders for coursework.",s:["Computer Graphics"],f:["render.py"]},
+{d:"2025-05-20",h:"91ab6f3",br:"main",m:"feat(kurl): human-readable HTTP client in Go",b:"My own open source CLI tool, written in Go.",s:["Go","CLI"],f:["main.go","client.go"]},
+{d:"2026-07-10",h:"5d2e8c0",br:"main",m:"feat: brain tumor MLP classifier",b:"Training a graded MLP that classifies scans into 3 classes.",s:["Machine Learning"],f:["train.py","model.py"]},
+{d:"2026-08-18",h:"e70c3b9",br:"oss",m:"fix(ballerina-lang): clearer error for inaccessible object init",b:"A compiler bug fix that improves an error message.",s:["Open Source","Compilers"],f:["compiler/"]},
+{d:"2026-08-21",h:"2c9f5a8",br:"oss",m:"docs(thunderid): responsive docs home layout",b:"Making the docs pages work on mobile.",s:["TypeScript"],f:["docs/"]},
+{d:"2026-10-10",h:"b61d7e4",br:"oss",m:"fix(openchoreo): show failed workflow state in the UI",b:"Fixing a blank screen when a workflow run fails.",s:["React"],f:["plugins/"]},
+{d:"2026-10-19",h:"0a8c2d6",br:"main",m:"plan: DevSecOps and GitOps pipeline for a 5-tier app",b:"Jenkins, ArgoCD, Trivy and Kubernetes secrets.",s:["Docker","Kubernetes","CI/CD"],f:["Jenkinsfile","k8s/"]},
+{d:"2026-10-27",h:"7e3b1f9",br:"main",m:"feat: portfolio on AWS Amplify",b:"This site: a pull request you can merge, a time machine and a garden.",s:["AWS","HTML/CSS/JS"],f:["index.html"]}
+];
+const t0=Date.parse(T[0].d), DAY=864e5, span=Math.round((Date.parse(T[T.length-1].d)-t0)/DAY);
+const ALL=[...new Set(T.flatMap(x=>x.s))], sl=$("#tm"), tmPlay=$("#tmPlay");
+sl.max=span;sl.value=span;
+function tm(){
+ const at=t0+(+sl.value)*DAY;let idx=0;T.forEach((c,i)=>{if(Date.parse(c.d)<=at)idx=i});
+ const c=T[idx], last=idx===T.length-1;
+ $("#tmDate").textContent=new Date(at).toISOString().slice(0,10);
+ $("#tmLog").innerHTML=`<span class="ln cmd">$ git log --graph --oneline --decorate</span>`+
+  T.map((x,i)=>i).reverse().map(i=>{const x=T[i];
+   return `<span class="ln${i>idx?" dim":""}${i===idx?" hl":""}">${x.br==="oss"?"| * ":"* | "}<span class="hash">${x.h}</span> ${i===idx?'<span class="hd">(HEAD'+(last?" -> main":"")+")</span> ":""}${esc(x.m)} <span class="dt">${x.d}</span></span>`}).join("");
+ $("#tmHead").innerHTML=`HEAD ${last?"on":"detached at"} <code>${last?"main":c.h}</code> · ${c.d}`;
+ $("#tmBody").innerHTML=`<p><b>${esc(c.m)}</b></p><p>${esc(c.b)}</p>
+  <p style="font:.82rem var(--mono);color:var(--muted)">$ git show --stat ${c.h}<br>${c.f.map(f=>" "+esc(f)).join("<br>")}</p>
+  <p style="margin-bottom:4px;color:var(--muted);font-size:.85rem">Stack unlocked so far:</p>
+  ${ALL.map(s=>`<span class="chip${T.slice(0,idx+1).some(x=>x.s.includes(s))?" on":""}">${esc(s)}</span>`).join("")}`;
+}
+sl.oninput=()=>{stop();tm()};
+$("#tmMain").onclick=()=>{stop();sl.value=span;tm()};
+let timer=null;
+function stop(){clearInterval(timer);timer=null;tmPlay.textContent="▶ Replay history"}
+tmPlay.onclick=()=>{
+ if(timer)return stop();
+ sl.value=0;tm();tmPlay.textContent="⏸ Pause";
+ timer=setInterval(()=>{sl.value=Math.min(span,+sl.value+Math.max(1,Math.round(span/150)));tm();if(+sl.value>=span)stop()},40)};
+tm();
+
+// ---- Contribution garden ----
+(function(){
+ const U="kavix",CELL=14,GAP=2,P=CELL+GAP,TOP=18,COLS=53,W=COLS*P,H=TOP+7*P;
+ const cv=$("#gc"),ctx=cv.getContext("2d"),tip=$("#tip"),dpr=devicePixelRatio||1;
+ cv.width=W*dpr;cv.height=H*dpr;cv.style.width=W+"px";cv.style.height=H+"px";ctx.scale(dpr,dpr);
+ const g1="#3fb950",g2="#238636",yl="#f2cc60",CL={merged:"#ab7df8",open:"#79c0ff",closed:"#ff7b72"};
+ const SPR={1:[[3,5,g1],[3,4,g1]],2:[[3,5,g2],[3,4,g2],[2,3,g1],[3,3,g1],[4,3,g1]],
+  3:[[1,4,g2],[2,5,g2],[3,5,g2],[4,5,g2],[5,4,g2],[2,4,g1],[3,4,g1],[4,4,g1],[3,3,g1],[3,2,g1]]};
+ const FL=c=>[[3,6,g2],[3,5,g2],[3,4,g2],[3,2,c],[2,3,c],[4,3,c],[3,3,yl]];
+ let cells=[],reveal=1e9,raf=0,started=false;
+ const iso=d=>d.toISOString().slice(0,10), lvl=c=>c.act===0?0:c.act<2?1:c.act<4?2:3;
+ const norm=i=>({created_at:i.created_at,title:i.title,url:i.html_url,repo:i.repository_url.split("/repos/")[1],num:i.number,
+  st:i.pull_request&&i.pull_request.merged_at?"merged":i.state==="open"?"open":"closed"});
+
+ const streak=a=>{let b=0,n=0;a.forEach(c=>{n=c.act?n+1:0;b=Math.max(b,n)});return b};
+ function build(prs,evs,cal){
+  const end=new Date();end.setUTCHours(0,0,0,0);
+  const start=new Date(end);start.setUTCDate(end.getUTCDate()-end.getUTCDay()-52*7);
+  const map={};cells=[];
+  for(let i=0;i<COLS*7;i++){const d=new Date(start);d.setUTCDate(start.getUTCDate()+i);if(d>end)break;
+   const c={k:iso(d),d,act:0,prs:[]};map[c.k]=c;cells.push(c)}
+  if(cal)cal.forEach(x=>{const c=map[x.d];if(c)c.act=x.c});else evs.forEach(e=>{const c=map[e.created_at.slice(0,10)];if(c)c.act++});
+  prs.forEach(p=>{const c=map[p.created_at.slice(0,10)];if(c){if(!cal)c.act++;c.prs.push(p)}});
+  const inYear=prs.filter(p=>map[p.created_at.slice(0,10)]);
+  $("#gStats").textContent=`${inYear.length} pull requests this year · ${inYear.filter(p=>p.st==="merged").length} merged · ${new Set(inYear.map(p=>p.repo)).size} repos · ${cells.filter(c=>c.act).length} active days · longest streak ${streak(cells)} days`;
+  cv.setAttribute("aria-label",`Garden of GitHub contributions: ${inYear.length} pull requests in the last year`);
+ }
+ function px(ox,oy,pts){pts.forEach(([x,y,c])=>{ctx.fillStyle=c;ctx.fillRect(ox+x*2,oy+y*2,2,2)})}
+ function draw(){
+  ctx.clearRect(0,0,W,H);ctx.font="10px system-ui,sans-serif";ctx.fillStyle="#9198a1";
+  cells.forEach((c,i)=>{const col=i/7|0,row=i%7,x=col*P,y=TOP+row*P;
+   if(row===0&&c.d.getUTCDate()<=7)ctx.fillText(c.d.toLocaleString("en",{month:"short",timeZone:"UTC"}),x,11);
+   ctx.fillStyle="#1f3a28";ctx.fillRect(x,y,CELL,CELL);
+   const s=Math.max(0,Math.min(1,reveal-i)),l=lvl(c);if(!s||!l)return;
+   px(x,y,SPR[Math.min(l,Math.ceil(s*l))]);
+   if(s>=1&&c.prs.length){const st=c.prs.some(p=>p.st==="merged")?"merged":c.prs.some(p=>p.st==="open")?"open":"closed";px(x,y,FL(CL[st]))}})}
+ function grow(){draw();reveal+=cells.length/130;if(reveal<cells.length+1)raf=requestAnimationFrame(grow);else{reveal=1e9;draw()}}
+ function water(){cancelAnimationFrame(raf);if(reduce){reveal=1e9;draw();return}reveal=0;grow()}
+ $("#water").onclick=water;
+
+ function at(e){const r=cv.getBoundingClientRect(),col=Math.floor((e.clientX-r.left)/P),row=Math.floor((e.clientY-r.top-TOP)/P);
+  return row>=0&&row<7?cells[col*7+row]:null}
+ cv.onmousemove=e=>{const c=at(e);
+  if(c&&c.act){tip.hidden=false;tip.style.left=e.clientX+12+"px";tip.style.top=e.clientY+12+"px";
+   tip.textContent=`${c.k}: ${c.act} contribution${c.act>1?"s":""}`+c.prs.map(p=>`\n${p.st}: ${p.title}`).join("")}else tip.hidden=true;
+  cv.style.cursor=c&&c.prs.length?"pointer":"default"};
+ cv.onmouseleave=()=>tip.hidden=true;
+ cv.onclick=e=>{const c=at(e);if(c&&c.prs.length)window.open(c.prs[0].url,"_blank","noopener")};
+
+ function demo(){ // sample garden when the GitHub API is unavailable
+  let s=7;const r=()=>(s=(s*16807)%2147483647)/2147483647,prs=[],evs=[];
+  for(let i=0;i<365;i++){const d=new Date(Date.now()-i*DAY).toISOString();
+   if(r()<.45)evs.push({created_at:d});if(r()<.04)prs.push({created_at:d,title:"Sample pull request",url:"https://github.com/"+U,repo:"sample/repo",num:i,st:r()<.7?"merged":"open"})}
+  build(prs,evs);$("#gStats").textContent+=" (sample data: GitHub API unavailable)"}
+
+ GH.then(d=>{
+  if(!d.prs.length&&!d.evs.length&&!d.cal)demo();else{build(d.prs,d.evs,d.cal);if(API)$("#gStats").textContent+=" · served by AWS Lambda"}
+ }).catch(demo).finally(()=>{
+  reveal=0;draw();
+  new IntersectionObserver((en,ob)=>{if(en[0].isIntersecting&&!started){started=true;ob.disconnect();water()}},{threshold:.4}).observe(cv)});
+})();
+
+// ---- git blame About ----
+// EDIT: each line points at a commit hash from the T array above.
+const AB=[["3f2a9c1","I'm a software engineering student at SLIIT."],["91ab6f3","I built kurl, a human-readable HTTP client written in Go."],["e70c3b9","I send fixes to compilers, UIs and docs in open source projects."],["7e3b1f9","Right now I'm shipping this portfolio on AWS Amplify and Lambda."]];
+$("#blame").innerHTML=AB.map(([h,t])=>{const c=T.find(x=>x.h===h);return `<tr><td class="bh"><button data-h="${h}" title="Check out this commit in the time machine">${h}</button> ${c?c.d:""} kavix</td><td>${esc(t)}</td></tr>`}).join("");
+$("#blame").onclick=e=>{const h=e.target.dataset&&e.target.dataset.h,c=h&&T.find(x=>x.h===h);if(!c)return;
+ stop();sl.value=Math.round((Date.parse(c.d)-t0)/DAY);tm();$("#time-machine").scrollIntoView({behavior:reduce?"auto":"smooth"})};
+
+// ---- git shell ----
+const SH=$("#shOut"),SI=$("#shIn"),hist=[];let hi=0;
+const SECS=["pr","time-machine","garden","about","skills","projects"];
+const go=id=>{const e=document.getElementById(id);if(e)e.scrollIntoView({behavior:reduce?"auto":"smooth"})};
+const out=(t,c)=>{const d=el("span","ln"+(c?" "+c:""),t);SH.append(d)};
+const CMDS={
+ "help":()=>"git log | git status | git branch | git blame | git remote -v | gh pr list | git checkout <branch> | clear",
+ "git status":()=>"On branch main\nYour branch is up to date with 'origin/main'.\nnothing to commit, working tree clean (open to opportunities)",
+ "git log":()=>T.slice(-5).reverse().map(c=>c.h+" "+c.m).join("\n"),
+ "git branch":()=>"* main\n"+SECS.map(s=>"  "+s).join("\n"),
+ "git blame":()=>{go("about");return "Every line of the About section is blamed on a commit."},
+ "git remote -v":()=>`origin  https://github.com/${GHU} (fetch)\norigin  https://github.com/${GHU} (push)`,
+ "gh pr list":async()=>{const d=await GH,m=d.prs.filter(p=>p.st==="merged").slice(0,5);return m.length?m.map(p=>`#${p.num}  ${p.title}  (${p.repo})`).join("\n"):"No pull requests loaded."}
+};
+async function run(raw){
+ const c=raw.trim().replace(/\s+/g," ");if(!c)return;hist.push(c);hi=hist.length;out("$ "+c,"cmd");
+ if(c==="clear"){SH.replaceChildren();return}
+ const co=c.match(/^git checkout (\S+)$/);
+ if(co){if(SECS.includes(co[1])){go(co[1]);out("Switched to branch '"+co[1]+"'")}else out("error: pathspec '"+co[1]+"' did not match. Try git branch");return}
+ const f=CMDS[c==="gh pr list --state merged"?"gh pr list":c];
+ out(f?await f():"command not found: "+c+" (type help)")}
+SI.onkeydown=e=>{
+ if(e.key==="Enter"){run(SI.value);SI.value=""}
+ else if(e.key==="ArrowUp"&&hist.length){hi=Math.max(0,hi-1);SI.value=hist[hi];e.preventDefault()}
+ else if(e.key==="ArrowDown"){hi=Math.min(hist.length,hi+1);SI.value=hist[hi]||"";e.preventDefault()}};
+out("Type help, or try: git checkout garden","cmd");
+
+runChecks();
+</script>
+</body>
+</html>
